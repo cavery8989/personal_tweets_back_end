@@ -15,7 +15,7 @@ router.get('/personify/:username', function(req, res){
       // handle error.
     }
 
-    res.json(200, data);
+    res.send(data);
   })
 });
 

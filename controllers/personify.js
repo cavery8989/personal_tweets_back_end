@@ -1,8 +1,9 @@
 const async = require('async');
 const watson = require('watson-developer-cloud');
-
 const Twitter = require('twitter');
+
 const config = require('../config');
+const helpers = require('../helpers/helpers');
 
 var client = new Twitter(config.twitterConfig);
 var personality_config = {
@@ -55,7 +56,14 @@ function makeProfileFromTweets (username, finalCallback) {
       if(err){
         return finalCallback(err);
       }
-      finalCallback(null, res);
+      var profile = [];
+      // {name: 1,
+      // score: 2}
+      profile.push(helpers.makeCharacterisitcObj(res.tree.children[0].children[0].name,
+        res.tree.children[0].children[0].percentage))
+      console.log(profile);
+      var rest = res.tree.children[0].children;
+      finalCallback(null, rest);
     });
 
 
