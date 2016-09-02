@@ -56,31 +56,23 @@ function makeProfileFromTweets (username, finalCallback) {
       if(err){
         return finalCallback(err);
       }
-      var profile = [];
-      // {name: 1,
-      // score: 2}
-      profile.push(helpers.makeCharacterisitcObj(res.tree.children[0].children[0].name,
-        res.tree.children[0].children[0].percentage))
-      console.log(profile);
-      var rest = res.tree.children[0].children;
-      finalCallback(null, rest);
+
+      var rest = res.tree.children[0].children[0].children;
+      console.log(rest);
+      // finalCallback(null, rest);
+      async.map(rest, function(item, callback){
+        var obj = helpers.makeCharacterisitcObj(item.name, item.percentage * 100);
+        callback(null,obj);
+      },function(err, mapResult){
+        console.log(mapResult);
+        var data = {
+          username: username,
+          profile : mapResult
+        };
+        finalCallback(null, data);
+      });
+
     });
-
-
-
   })
 }
 
-// var params = {
-//   screen_name: username
-// };
-//
-// client.get('statuses/user_timeline', params, function (err,tweet,  res) {
-//
-//   if(err) {
-//     return console.log(err);
-//   }
-//
-//   callback(null, tweet[0].text);
-//
-// });
