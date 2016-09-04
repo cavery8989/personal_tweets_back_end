@@ -28,10 +28,10 @@ function makeProfileFromTweets (username, finalCallback) {
 
       };
       client.get('statuses/user_timeline', params, function (err, tweets, res) {
-        if(err || !tweets){
+        if(err || !tweets[0]){
           return err? callback(err): callback(new Error('Problem getting tweets'));
         }
-        console.log(tweets[0].user);
+
         var imageUrl =tweets[0].user.profile_image_url.replace(/_normal/,'');
         callback(null, tweets, imageUrl)
 
