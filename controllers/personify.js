@@ -31,11 +31,13 @@ function makeProfileFromTweets (username, finalCallback) {
         if(err || !tweets){
           return err? callback(err): callback(new Error('Problem getting tweets'));
         }
-        callback(null, tweets)
+        console.log(tweets[0].user);
+        var imageUrl =tweets[0].user.profile_image_url.replace(/_normal/,'');
+        callback(null, tweets, imageUrl)
 
       })
     },
-    function (tweetsObjArr, callback) {
+    function (tweetsObjArr,imageUrl, callback) {
 
       async.reduce(tweetsObjArr, '', function (memo, tweetObj, callback) {
         var tweet = tweetObj.text;
@@ -45,12 +47,12 @@ function makeProfileFromTweets (username, finalCallback) {
         var params = {
           "text": reduceResult
         };
-        callback(null , params);
+        callback(null , params, imageUrl);
       })
 
     }
 
-  ],function(err, params){
+  ],function(err, params, imageUrl){
 
     personality_insights.profile(params, function (err , res) {
       if(err){
@@ -58,15 +60,13 @@ function makeProfileFromTweets (username, finalCallback) {
       }
 
       var rest = res.tree.children[0].children[0].children;
-      console.log(rest);
-      // finalCallback(null, rest);
       async.map(rest, function(item, callback){
         var obj = helpers.makeCharacterisitcObj(item.name, item.percentage * 100);
         callback(null,obj);
       },function(err, mapResult){
-        console.log(mapResult);
         var data = {
           username: username,
+          imageUrl: imageUrl,
           profile : mapResult
         };
         finalCallback(null, data);
